@@ -1,0 +1,11 @@
+const express= require("express");
+const routes=express.Router();
+const {insertselfapplication,getdata,fetchalldata,fetchInteroperabilityRequest,networkMonitoring} = require("../controller/user_application");
+// routes.route("/",inter).post(getInterOperability);
+// routes.route("/getData").get(getInterOperability);
+routes.route("/insertuser").post(insertselfapplication);
+routes.route("/fetch").post(getdata);
+routes.route("/fetchalldata").post(fetchalldata);
+routes.route("/fetchInterRequest").post(fetchInteroperabilityRequest);
+routes.route("/network").post(networkMonitoring);
+module.exports=routes;

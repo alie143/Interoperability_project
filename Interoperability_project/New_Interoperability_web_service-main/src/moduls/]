@@ -1,0 +1,29 @@
+const mongoose=require('mongoose');
+const user_application=new mongoose.Schema({
+
+     email:{
+      type:String,
+       required:true,
+      unique:true
+     },
+    
+    ipAddress:{
+     type:String,
+     require:true
+    },
+    apidata:{
+     type:Array,
+     require:true
+    },
+   application_ip_address:{
+     type:String,
+     require:true
+    },
+    status_app:{	
+      type:String,
+       require:true 	    
+    }
+})
+
+module.exports=mongoose.model('user_application',user_application)
+

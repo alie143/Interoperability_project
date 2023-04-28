@@ -1,0 +1,208 @@
+const fetch = require("node-fetch");
+const self_application = require("../moduls/self_application");
+ 
+
+exports.insertselfapplication = async (req, res) => {
+
+try {
+  const {application_name,apidata,method_name,email}=req.body;
+	  var alldata=[];
+
+            var data = {
+            template_type:apidata.template_type
+       }
+         
+ var obj = {
+email:email,
+apidata:[],
+ipAddress:"10.210.12.216",
+     }
+              
+
+     var  Self_application = await self_application.find({email});
+
+             let response = await fetch('http://10.210.12.179:3005/functions/getapi', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+            },
+          body: JSON.stringify(data)
+
+        });
+       let responseJson = await response.json();
+
+	
+     var apidatalist=[];
+
+    
+     for(var i=0;i<responseJson.length;i++){
+
+              
+          for(var j=0;j<apidata.method_name.length;j++){
+       if(responseJson[i].method_name==apidata.method_name[j]){
+	        console.log("apidata  : "+apidata.method_name[j]+"\n");
+       var newobj={
+       method_name:responseJson[i].method_name,
+       rest_api_type:responseJson[i].rest_api_type,
+       api_url:responseJson[i].api_url,
+
+       }
+
+      apidatalist[apidatalist.length]=newobj;
+       }}}
+
+	console.log("new obj  : "+JSON.stringify(apidatalist)+"\n");
+
+     alldata[alldata.length]={
+      template_type:apidata.template_type,
+      application_name:apidata.application_name,
+      apidatalist:apidatalist
+     }
+
+// console.log("**************************************************"+JSON.stringify(alldata));	
+     if(Self_application.length==0){    
+    obj.apidata[0]=alldata;
+	     
+var Self_application = await self_application.create(obj);
+	     console.log("**************************************************"+JSON.stringify(alldata));
+}else{
+    var flag= false;
+    for(var i=0;i<Self_application[0].apidata.length;i++){
+        if(Self_application[0].apidata[i].template_type==apidata.template_type){
+         flag = true;
+        }
+         
+        if(flag==false){
+
+	     console.log("false :"+alldata);	
+            Self_application[0].apidata[Self_application[0].apidata.length]=alldata;
+            var self_application_update = await self_application.updateMany(Self_application[0])
+        }else{
+//            res.send("allready present ");
+        }
+   
+       }
+}
+     
+
+     
+res.status(200).json({
+success: true,
+token: Self_application
+})
+} catch (error) {
+res.status(404).json({
+success: false,
+message: error
+})
+}
+
+}
+
+  exports.getapplicationname = async (req, res) => {
+    try{
+	    console.log("application name");
+       const tmp= await self_application.find();
+	    var applicationname=[];
+	  for(var i=0;i<tmp.length;i++){
+            applicationname[applicationname.length]=tmp[i].application_name;
+	  }
+        res.json(applicationname);
+
+
+  }catch(err)
+
+  {
+      res.send("error"+err)
+  }
+
+  }
+
+
+
+
+ exports.getdomainname= async (req, res) => {
+ try{
+console.log("domain name");
+      const {application_name} = req.body;
+          console.log("api call "+JSON.stringify(req.body));
+       const tmp= await self_application.find({application_name})
+//template_type
+      var template_types=[];
+	 console.log(JSON.stringify(tmp.length));
+      for(var i=0;i<tmp[0].apidata.length;i++){ 
+      template_types[template_types.length]=tmp[0].apidata[i].template_type;
+      }  
+        res.json(template_types);
+
+
+
+  }catch(err)
+
+  {
+      res.send("error"+err)
+  }
+
+ }
+
+
+
+ exports.getdomainnameall= async (req, res) => {
+ try{
+
+          
+       const tmp= await self_application.find()
+//template_type
+      var template_types=[];
+         
+	 for(var j=0;j<tmp.length;j++){
+		  console.log("length : "+tmp);
+      for(var i=0;i<tmp.apidata.length;i++){
+      template_types[template_types.length]=tmp[j].apidata[i].template_type;
+      
+      }
+	 }
+        res.json(template_types);
+
+
+
+  }catch(err)
+
+  {
+      res.send("error"+err)
+  }
+
+ }
+
+
+
+
+ exports.getmethodname= async (req, res) => {
+ try{
+console.log("method name");
+      const {application_name,template_type} = req.body;
+          console.log("api call "+JSON.stringify(req.body));
+       const tmp= await self_application.find({application_name})
+     var method=[];
+	 for(var i=0;i<tmp[0].apidata.length;i++){
+         if(tmp[0].apidata[i].template_type==template_type)
+		 {
+                for(var j=0;j<tmp[0].apidata[i].apidatalist.length;j++){
+                method[method.length]=tmp[0].apidata[i].apidatalist[j].method_name;
+		}
+		 }
+	 }
+        res.json(method);
+
+  }catch(err)
+
+  {
+      res.send("error"+err)
+  }
+
+ }
+
+
+
+
+

@@ -1,0 +1,13 @@
+const express= require("express");
+const routes=express.Router();
+const {insertselfapplication,getapplicationname,getdomainname,getdomainnameall,getmethodname,fetchapptemp,fetchalldata} = require("../controller/self_application_c");
+// routes.route("/",inter).post(getInterOperability);
+// routes.route("/getData").get(getInterOperability);
+routes.route("/fetchdata").post(fetchalldata);
+routes.route("/fetchall").post(fetchapptemp);
+routes.route("/insertself").post(insertselfapplication);
+routes.route("/application").post(getapplicationname);
+routes.route("/domain").post(getdomainname);
+routes.route("/domainall").post(getdomainnameall);
+routes.route("/method").post(getmethodname);
+module.exports=routes;
